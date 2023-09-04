@@ -177,10 +177,12 @@ export default function Home() {
   const div1: any = useRef<HTMLDivElement>(null);
 
   const onScroll = () => {
-    div2.current.forEach(current => {
-      current.scrollLeft = div1.current?.scrollLeft || 0
-    })
-  }
+    div2.current.forEach((current) => {
+      if (current) {
+        current.scrollLeft = div1.current?.scrollLeft || 0;
+      }
+    });
+  };
 
   const handleMouseDownDiv = (event: any) => {
     setDragging(true);
@@ -456,6 +458,7 @@ const getStatusColorAndName = (status: any) => {
   }
 };
 
+
 const [openModal, setOpenModal] = React.useState(false);
 
 const handleClickOpen = () => {
@@ -465,6 +468,13 @@ const handleClickOpen = () => {
 const handleCloseOpen = () => {
   setOpenModal(false);
 };
+
+  // Atualiza a posição do scroll ao renderizar
+  useEffect(() => {
+    if (accordionOpen) onScroll();
+  }, [accordionOpen]);
+
+
 
   return (
     <main className={styles.main} style={{backgroundColor: 'white'}}>
