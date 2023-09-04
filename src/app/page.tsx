@@ -167,8 +167,7 @@ export default function Home() {
     setDragging(false);
   };
 
-  const handleMouseDown = (event: any, isCheckIn: any, reservationIndex: any) => {   
-    debugger 
+  const handleMouseDown = (event: any, isCheckIn: any, reservationIndex: any) => {        
     event.preventDefault();
 
     const reservation: any = reservations.find((reservation) => reservation.IdReserva === reservationIndex.IdReserva);
@@ -186,7 +185,7 @@ export default function Home() {
 
       const offsetX = event.clientX - startX;
       const newLeft = offsetX + startLeft;
-      debugger
+      // debugger
       const newDay = Math.max(0,Math.min(datasIntervalo.length, Math.floor(newLeft / dayWidth)));
 
       let checkInDate: number;
@@ -276,7 +275,7 @@ export default function Home() {
   };
 
   const checkDate = (checkIn: any, checkOut: any) => {
-debugger
+
     const CheckIn =  checkIn;
     const CheckOut=  checkOut;
 
@@ -318,7 +317,6 @@ debugger
   }
 
   const addReservation = (event : any, date: any) => {
-debugger
   const clientY = Math.ceil((event.clientY / 60) - 2);
 
   const lastReservation = reservations[reservations.length - 1];
@@ -437,8 +435,8 @@ const getStatusColorAndName = (status: any) => {
                                 key={indexador}
                                 className={`${styles.guest} ${styles.draggingGuest}`}
                                 style={{
-                                  left: `${(convertCheckIn(reservation.CheckIn) * dayWidth)}px`,
-                                  width: `${((convertCheckOut(reservation.CheckOut) + 1) - convertCheckIn(reservation.CheckIn)) * 60}px`,
+                                  left: `${(convertCheckIn(reservation.CheckIn) * dayWidth) + 15}px`,
+                                  width: `${((convertCheckOut(reservation.CheckOut) + 1) - convertCheckIn(reservation.CheckIn)) * 50}px`,
                                   height: `${dayWidth/2}px`,
                                   borderBottom: `${getStatusColorAndName(reservation.Status)}`,
                                   cursor: 'move',
@@ -480,33 +478,33 @@ const getStatusColorAndName = (status: any) => {
                         </div>
                       </div>
                     </div>
-              )
-            })}
-          </div>
-        )}   
-      <div style={{ display: 'flex', background:'white', padding: '4rem', justifyContent: 'space-evenly', border: '1px solid #ccc', margin: '2rem' }}>             
-        <div>
-          <SquareIcon style={{fontSize:'15px', color:'green'}}></SquareIcon>
-          <span style={{fontSize:'13px'}}>Bloqueada</span>
-        </div>           
-        <div>
-          <SquareIcon style={{fontSize:'15px', color:'blue'}}></SquareIcon>
-          <span style={{fontSize:'13px'}}>Confirmada</span>
-        </div>
-        <div>
-          <SquareIcon style={{fontSize:'15px', color:'#616161'}}></SquareIcon>
-          <span style={{fontSize:'13px'}}>Manutenção</span>
-        </div>
-        <div>
-          <SquareIcon style={{fontSize:'15px', color:'yellow'}}></SquareIcon>
-          <span style={{fontSize:'13px'}}>Pendente</span>
-        </div>
-        <div>
-          <CircleIcon style={{fontSize:'15px', color:'red'}}></CircleIcon>
-          <span style={{fontSize:'13px'}}>Financeiro Aberto</span>
-        </div>
-      </div>  
-    </main>
-  )
+                    )
+                  })}
+                </div>
+              )}   
+            <div style={{ display: 'flex', background:'white', padding: '4rem', justifyContent: 'space-evenly', border: '1px solid #ccc', margin: '2rem' }}>             
+              <div>
+                <SquareIcon style={{fontSize:'15px', color:'green'}}></SquareIcon>
+                <span style={{fontSize:'13px'}}>Bloqueada</span>
+              </div>           
+              <div>
+                <SquareIcon style={{fontSize:'15px', color:'blue'}}></SquareIcon>
+                <span style={{fontSize:'13px'}}>Confirmada</span>
+              </div>
+              <div>
+                <SquareIcon style={{fontSize:'15px', color:'#616161'}}></SquareIcon>
+                <span style={{fontSize:'13px'}}>Manutenção</span>
+              </div>
+              <div>
+                <SquareIcon style={{fontSize:'15px', color:'yellow'}}></SquareIcon>
+                <span style={{fontSize:'13px'}}>Pendente</span>
+              </div>
+              <div>
+                <CircleIcon style={{fontSize:'15px', color:'red'}}></CircleIcon>
+                <span style={{fontSize:'13px'}}>Financeiro Aberto</span>
+              </div>
+            </div>  
+          </main>
+        )
 }
 
