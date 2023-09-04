@@ -1,26 +1,26 @@
 'use client'
-import Image from 'next/image'
 import styles from './page.module.css'
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import Typography from '@mui/material/Typography';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import TextField, { OutlinedTextFieldProps } from '@mui/material/TextField';
+import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
 import React, { useEffect, useRef, useState } from "react";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CircleIcon from '@mui/icons-material/Circle';
 import SquareIcon from '@mui/icons-material/Square';
-import { log } from 'console';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, IconButton, InputLabel, Menu, MenuItem, OutlinedInput } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 
 export default function Home() {
 
-  const [draggedHospede, setDraggedHospede] = useState("");
 
+
+  const [draggedHospede, setDraggedHospede] = useState("");
   const [reservations, setReservations] = useState([
     {
       IdReserva: 1,
@@ -97,7 +97,45 @@ export default function Home() {
       NomeQuarto: "QUARTO 4"      
     }
   ]);
+
+
+  const hotel = [
+    {
+      value: 1,
+      nome: 'Fiore Prime',
+    }
+  ];
+
+
+  const status = [
+    {
+      value: 1,
+      status: 'Bloqueado',
+    },
+    {
+      value: 2,
+      status: 'Confirmada',
+    },
+    {
+      value: 3,
+      status: 'Manutenção',
+    },
+    {
+      value: 4,
+      status: 'Pendente',
+    },
+    {
+      value: 5,
+      status: 'Financeiro Aberto',
+    }
+  ];
   
+  const [nome, setNome] = useState('');
+  const [nomeHotel, setNomeHotel] = useState('');
+  const [nomeQuarto, setNomeQuarto] = useState('');
+  const [statusReserva, setStatusReserva] = useState('');
+  const [checkIn, setCheckIn] = useState<any>('');
+  const [checkOut, setCheckOut] = useState<any>('');
 
   const reservationsByBedrooms: any = {};
   // Inicializa as listas de reservas para cada quarto
@@ -127,8 +165,6 @@ export default function Home() {
     data.setDate(dataInicio.getDate() + i);
     datasIntervalo.push(data);
   }
-
-  console.log(datasIntervalo)
 
   const dayWidth = 60;
 
@@ -171,7 +207,7 @@ export default function Home() {
 
   const handleMouseDown = (event: any, isCheckIn: any, reservationIndex: any) => {        
     event.preventDefault();
-
+    
     const reservation: any = reservations.find((reservation) => reservation.IdReserva === reservationIndex.IdReserva);
 
     const checkInDate = new Date(reservation.CheckIn);
@@ -187,20 +223,20 @@ export default function Home() {
 
       const offsetX = event.clientX - startX;
       const newLeft = offsetX + startLeft;
-      // debugger
+      
       const newDay = Math.max(0,Math.min(datasIntervalo.length, Math.floor(newLeft / dayWidth)));
 
-      let checkInDate: number;
-      let checkOutDate: number;
-
-      if (isCheckIn) {
-        checkInDate = newDay;
-        checkOutDate = Math.max(checkOutIndex, newDay)
-
-      } else {
-        checkInDate = Math.min(checkInIndex, newDay)
-        checkOutDate = newDay
-      }
+      let checkInDate: any;
+      let checkOutDate: any;
+      console.log(newDay, checkInIndex, checkOutIndex )
+      if (isCheckIn) {       
+            checkInDate = newDay;
+            checkOutDate = Math.max(checkOutIndex, newDay)       
+      } else {     
+            checkInDate = Math.min(checkInIndex, newDay)
+            checkOutDate = newDay
+            console.log(checkInDate,checkOutDate)     
+        }
 
       setReservations(reservation => {
         reservation.forEach((_reservation) => {
@@ -223,8 +259,7 @@ export default function Home() {
     window.addEventListener('mouseup', handleMouseUp);
   };
 
-  const handleDayDrop = (event: any, day: any, reservationIndex: any) => {
-    // debugger
+  const handleDayDrop = (event: any, day: any) => {    
     event.preventDefault();
     
     const jsonObject = JSON.parse(draggedHospede);   
@@ -253,17 +288,24 @@ export default function Home() {
     const checkInIndex = (datasIntervalo.findIndex((date: any) => date.getTime() === checkInDate.getTime()));
     const checkOutIndex = (datasIntervalo.findIndex((date: any) => date.getTime() === checkOutDate.getTime()));
     
-    let newCheckIn = day;    
-    let newCheckOut = newCheckIn + (checkOutIndex - checkInIndex);
+    let newCheckOut: any; 
+    let newCheckIn: any;
 
-    // const check = checkDate(newCheckIn, newCheckOut);
+    if(day > checkInIndex){
+      newCheckOut = day;
+      newCheckIn = newCheckOut - (checkOutIndex - checkInIndex);    
+    }else{
+      newCheckIn = day;    
+      newCheckOut = newCheckIn + (checkOutIndex - checkInIndex);
+    }    
 
-    // if(check === true){
-    //   debugger
-    //   newCheckIn = checkInIndex;
-    //   newCheckOut = checkOutIndex;
-    // };
+    const check = checkDate(newCheckIn, newCheckOut);
 
+    if(check === true){    
+      newCheckIn = checkInIndex;
+      newCheckOut = checkOutIndex;
+    };
+  
     setReservations(reservation => reservation.map((_reservaton) => {
       if (_reservaton.IdReserva === id && newCheckIn !== newCheckOut) {
         return {
@@ -277,25 +319,57 @@ export default function Home() {
   };
 
   const checkDate = (checkIn: any, checkOut: any) => {
-
     const CheckIn =  checkIn;
-    const CheckOut=  checkOut;
-
+    const CheckOut =  checkOut;
+    
     for (const reservation of reservations) {
       const reservationCheckIn = new Date(reservation.CheckIn);
       const reservationCheckOut = new Date(reservation.CheckOut);
 
       const checkInIndex = (datasIntervalo.findIndex((date: any) => date.getTime() === reservationCheckIn.getTime()));
-      const checkOutIndex = (datasIntervalo.findIndex((date: any) => date.getTime() === reservationCheckOut.getTime()));
-  
-      // Verifica se as datas do objeto correspondem às datas de entrada
-      if ( CheckIn >= checkInIndex && CheckOut <= checkOutIndex ) {
-        return true; // Encontrou uma correspondência, retorna true
+      const checkOutIndex = (datasIntervalo.findIndex((date: any) => date.getTime() === reservationCheckOut.getTime()));  
+
+      if ( CheckIn >= checkOutIndex && CheckOut <= checkInIndex ) {
+        return true; 
       }
     }
     return false
   }
 
+  // const checkDateMouse = (checkIn: any, checkOut: any, isCheckIn: any) => {
+  //   // debugger
+  //       const CheckIn =  checkIn;
+  //       const CheckOut =  checkOut;
+  //       console.log(checkIn, checkOut,isCheckIn )
+
+  //       if(isCheckIn){
+  //         for (const reservation of reservations) {           
+  //           const reservationCheckOut = new Date(reservation.CheckOut);      
+        
+  //           const checkOutIndex = (datasIntervalo.findIndex((date: any) => date.getTime() === reservationCheckOut.getTime()));        
+            
+  //           if ( CheckIn >= checkOutIndex ) {
+  //             return true;
+  //           }
+  //         }
+  //         return false
+  //         }
+  //         else{
+  //           for (const reservation of reservations) {
+  //             const reservationCheckIn = new Date(reservation.CheckIn);              
+        
+  //             const checkInIndex = (datasIntervalo.findIndex((date: any) => date.getTime() === reservationCheckIn.getTime()));
+              
+  //             console.log(CheckOut,checkInIndex)
+             
+  //             if (CheckOut >= checkInIndex ) {
+  //               return true; 
+  //             }
+  //           }
+  //           return false
+  //         }
+  //       }
+        
   const toggleAccordion = () => {
     setAccordionOpen(!accordionOpen);
   };
@@ -303,38 +377,41 @@ export default function Home() {
   const convertCheckIn = (dateIn: any) => {
     let CheckIn = new Date(dateIn);
     let convertCheckIn = datasIntervalo.findIndex((date: any) => date.getTime() === CheckIn.getTime());
+
     return convertCheckIn;
   }
 
   const convertCheckOut = (dateOut: any) => {
     let CheckOut = new Date(dateOut);
     let convertCheckOut = datasIntervalo.findIndex((date: any) => date.getTime() === CheckOut.getTime());
+ 
     return convertCheckOut;
   }
 
   const handleDrag = (e: any, index: any, hospede:any) =>{   
     const hospedeStringfy = JSON.stringify(hospede);
     setDraggedHospede(hospedeStringfy);  
-    console.log(e)
+ 
   }
 
-  const addReservation = (event : any, date: any) => {
-  const clientY = Math.ceil((event.clientY / 60) - 2);
-
+  const addReservation = (event:any, nome: any, nomeHotel: any, idQuarto: any, statusReserva: any,  checkIn: any, checkOut: any) => {
+  debugger
+  event.preventDefault();
+console.log(checkIn)
   const lastReservation = reservations[reservations.length - 1];
   const lastId = lastReservation ? lastReservation.IdReserva : 0;
 
   const newId = lastId + 1;
-
-  const newReservation = {
+ 
+  const newReservation: any = {
     IdReserva: newId,
-    Cliente: `Hospede ${newId}`,
-    IdImovel: clientY,
-    NomeHotel: "Fiore Prime", 
+    Cliente: `${nome}`,
+    IdImovel: idQuarto,
+    NomeHotel: `${nomeHotel}`, 
     IdHotel: 1,
-    CheckIn: datasIntervalo[date],
-    CheckOut: datasIntervalo[date + 1],
-    Status: "Bloqueado"
+    CheckIn: `${formatDatePick(checkIn)}`,
+    CheckOut: `${formatDatePick(checkOut)}`,
+    Status: `${statusReserva}`
   };
 
   const newReservations = [...reservations];
@@ -342,12 +419,26 @@ export default function Home() {
   newReservations.push(newReservation);
  
   setReservations(newReservations);
+
+  setOpenModal(false);
+}
+
+const formatDatePick = ( date: any) =>{
+  const dataEntrada = date;
+
+  // Crie um objeto Date com a data de entrada
+  const data = new Date(dataEntrada);
+  
+  // Formate a data no formato desejado (YYYY-MM-DDTHH:mm:ss)
+  const dataFormatada = `${data.getFullYear()}-${(data.getMonth() + 1).toString().padStart(2, '0')}-${data.getDate().toString().padStart(2, '0')}T12:00:00`;
+
+  return dataFormatada;
 }
 
 
 const allowDrop = (event : any) => {
-  event.preventDefault();
- 
+  // debugger
+  event.preventDefault(); 
 };
 
 const getStatusColorAndName = (status: any) => {
@@ -367,17 +458,139 @@ const getStatusColorAndName = (status: any) => {
   }
 };
 
+
+const [openModal, setOpenModal] = React.useState(false);
+
+const handleClickOpen = () => {
+  setOpenModal(true);
+};
+
+const handleCloseOpen = () => {
+  setOpenModal(false);
+};
+
   // Atualiza a posição do scroll ao renderizar
   useEffect(() => {
     if (accordionOpen) onScroll();
   }, [accordionOpen]);
 
 
+
   return (
     <main className={styles.main} style={{backgroundColor: 'white'}}>
       <div style={{ display: 'flex' }}>
         <div style={{display: 'flex'}} >
-          <div style={{ width: '10rem', backgroundColor: '#fff', borderRight: 'solid 3px #ccc' }}></div>
+          <div style={{ width: '10rem', backgroundColor: '#fff', borderRight: 'solid 3px #ccc', display: 'flex' , justifyContent: 'center' }}>
+          <Button
+          id="basic-button"
+          onClick={handleClickOpen}
+          >
+          <AddIcon></AddIcon>
+        </Button>
+        <Dialog open={openModal} onClose={handleCloseOpen}>
+          <DialogTitle>Novo Hospede</DialogTitle>
+          <DialogContent>            
+            <FormControl>
+              <div style={{display: 'flex'}}>
+                <div>
+                  <span>Nome</span>
+                  <TextField  variant="outlined" value={nome} onChange={(e) => setNome(e.target.value)}/>
+                </div>
+                <div>
+                  <span>Nome do Hotel</span>
+                  <TextField
+                    select
+                    helperText="Selecione o nome do hotel"
+                    value={nomeHotel} onChange={(e) => setNomeHotel(e.target.value)}
+                    >
+                    {hotel.map((option) => (
+                      <MenuItem key={option.value} value={option.nome}>
+                        {option.nome}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </div>
+              </div>
+              <div style={{display: 'flex'}}>
+                <div style={{display: 'flex', flexDirection: 'column', paddingRight: '2rem'}}>
+                    <span>Nome do Quarto</span>
+                    <TextField
+                      select
+                      helperText="Selecione o nome do quarto"
+                      value={nomeQuarto} onChange={(e) => setNomeQuarto(e.target.value)}
+                      >
+                      {bedrooms.map((option) => (
+                        <MenuItem key={option.IdImovel} value={option.IdImovel}>
+                          {option.NomeQuarto}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </div>
+                  <div style={{display: 'flex', flexDirection: 'column'}}>
+                    <span>Status</span>
+                    <TextField
+                      select
+                      helperText="Selecione o nome do quarto"
+                      value={statusReserva} onChange={(e) => setStatusReserva(e.target.value)}
+                      >
+                      {status.map((option) => (
+                        <MenuItem key={option.value} value={option.status}>
+                          {option.status}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </div>
+              </div>       
+              <div style={{display: 'flex'}}>
+                <div>
+                  <span>Check-In</span>
+                  <LocalizationProvider dateAdapter={AdapterDayjs} >
+                    <DemoContainer components={['DatePicker']}>
+                      <DatePicker  value={checkIn} onChange={(newValue) => setCheckIn(newValue)}/>
+                    </DemoContainer>
+                  </LocalizationProvider>
+                  {/* <OutlinedInput
+                  value={checkIn} onChange={(e) => setCheckIn(e.target.value)}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <CalendarMonthIcon></CalendarMonthIcon>
+                      </InputAdornment>
+                    }
+                    /> */}
+                </div>
+                <div>
+                <span>Check-Out</span>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DemoContainer components={['DatePicker']}>
+                      <DatePicker  value={checkOut} onChange={(newValue) => setCheckOut(newValue)}/>
+                    </DemoContainer>
+                  </LocalizationProvider>
+                  {/* <OutlinedInput                  
+                    value={checkOut} onChange={(e) => setCheckOut(e.target.value)}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <CalendarMonthIcon></CalendarMonthIcon>
+                      </InputAdornment>
+                    }
+                    /> */}
+                </div>
+              </div>
+            </FormControl>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={(event) => addReservation(
+              event,
+              nome,
+              nomeHotel,
+              nomeQuarto,
+              statusReserva,
+              checkIn,
+              checkOut
+              )} >Adicionar</Button>
+            <Button onClick={handleCloseOpen}>Cancelar</Button>
+          </DialogActions>
+        </Dialog>      
+          </div>
           <div style={{ display: 'flex', width: '68rem', overflow: 'auto', cursor: 'pointer' }} ref={div1}
             onScroll={onScroll}
             onMouseDown={handleMouseDownDiv}
@@ -426,11 +639,13 @@ const getStatusColorAndName = (status: any) => {
                                 <div
                                   key={index}
                                   className={`${styles.day} ${styles.draggingOver}`}    
-                                  onDragOver={(event) => allowDrop(event)}                                
-                                  onDrop={(event) => handleDayDrop(event, index, draggedHospede)}
-                                  onClick={(event) => addReservation(event, index)}   
+                                  // onDragOver={(event) => allowDrop(event)}       
+                                  onDragOver={(event) => allowDrop(event)}                         
+                                  onDrop={(event) => handleDayDrop(event, index)}
+                                  
+                                  // onClick={(event) => addReservation(event, index)}   
                                   style={{ backgroundColor: (diasAbreviados[date.getDay()] === 'Dom' || diasAbreviados[date.getDay()] === 'Sáb') ? '#F0F8FF' : 'white' }}
-                                >
+                                >                                  
                                   <span className={styles.clipPath}>{mesesAbreviados[date.getMonth()]}</span>
                                   <span className={styles.clipPath} style={{ textAlign: 'center' }}>{date.getDate()}</span>
                                   <span className={styles.clipPath}>{diasAbreviados[date.getDay()]}</span>
@@ -438,19 +653,21 @@ const getStatusColorAndName = (status: any) => {
                               )
                             })}
 
-                            {hospedes.map((reservation: any, indexador: any) => (
+                            {hospedes.map((reservation: any, indexador: any) => {
+                              return(
                               <div
                                 key={indexador}
                                 className={`${styles.guest} ${styles.draggingGuest}`}
                                 style={{
-                                  left: `${(convertCheckIn(reservation.CheckIn) * dayWidth) + 15}px`,
-                                  width: `${((convertCheckOut(reservation.CheckOut) + 1) - convertCheckIn(reservation.CheckIn)) * 50}px`,
+                                  left: `${(convertCheckIn(reservation.CheckIn) * 60) + 15}px`,
+                                  width: `${(((convertCheckOut(reservation.CheckOut) + 1) - convertCheckIn(reservation.CheckIn)) * 60) - 30}px`,
                                   height: `${dayWidth/2}px`,
                                   borderBottom: `${getStatusColorAndName(reservation.Status)}`,
                                   cursor: 'move',
                                   display: 'flex',
                                   position: 'absolute',
                                   justifyContent: 'space-between'
+                                  
                                 }}
                                 draggable
                                 onDrag={(event) => handleDrag(event, indexador, reservation)}
@@ -481,7 +698,7 @@ const getStatusColorAndName = (status: any) => {
                                 >
                                 </div>
                               </div>
-                            ))}
+                             )})}
                           </div>
                         </div>
                       </div>
