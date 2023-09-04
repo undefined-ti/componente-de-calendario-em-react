@@ -299,12 +299,12 @@ export default function Home() {
       newCheckOut = newCheckIn + (checkOutIndex - checkInIndex);
     }    
 
-    const check = checkDate(newCheckIn, newCheckOut);
+    // const check = checkDate(newCheckIn, newCheckOut);
 
-    if(check === true){    
-      newCheckIn = checkInIndex;
-      newCheckOut = checkOutIndex;
-    };
+    // if(check === true){    
+    //   newCheckIn = checkInIndex;
+    //   newCheckOut = checkOutIndex;
+    // };
   
     setReservations(reservation => reservation.map((_reservaton) => {
       if (_reservaton.IdReserva === id && newCheckIn !== newCheckOut) {
@@ -329,7 +329,9 @@ export default function Home() {
       const checkInIndex = (datasIntervalo.findIndex((date: any) => date.getTime() === reservationCheckIn.getTime()));
       const checkOutIndex = (datasIntervalo.findIndex((date: any) => date.getTime() === reservationCheckOut.getTime()));  
 
-      if ( CheckIn >= checkOutIndex && CheckOut <= checkInIndex ) {
+
+
+      if ( (CheckIn >= checkOutIndex && CheckOut <= checkInIndex)) {
         return true; 
       }
     }
@@ -395,9 +397,9 @@ export default function Home() {
   }
 
   const addReservation = (event:any, nome: any, nomeHotel: any, idQuarto: any, statusReserva: any,  checkIn: any, checkOut: any) => {
-  debugger
+
   event.preventDefault();
-console.log(checkIn)
+
   const lastReservation = reservations[reservations.length - 1];
   const lastId = lastReservation ? lastReservation.IdReserva : 0;
 
@@ -548,15 +550,7 @@ const handleCloseOpen = () => {
                     <DemoContainer components={['DatePicker']}>
                       <DatePicker  value={checkIn} onChange={(newValue) => setCheckIn(newValue)}/>
                     </DemoContainer>
-                  </LocalizationProvider>
-                  {/* <OutlinedInput
-                  value={checkIn} onChange={(e) => setCheckIn(e.target.value)}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <CalendarMonthIcon></CalendarMonthIcon>
-                      </InputAdornment>
-                    }
-                    /> */}
+                  </LocalizationProvider>             
                 </div>
                 <div>
                 <span>Check-Out</span>
@@ -564,15 +558,7 @@ const handleCloseOpen = () => {
                     <DemoContainer components={['DatePicker']}>
                       <DatePicker  value={checkOut} onChange={(newValue) => setCheckOut(newValue)}/>
                     </DemoContainer>
-                  </LocalizationProvider>
-                  {/* <OutlinedInput                  
-                    value={checkOut} onChange={(e) => setCheckOut(e.target.value)}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <CalendarMonthIcon></CalendarMonthIcon>
-                      </InputAdornment>
-                    }
-                    /> */}
+                  </LocalizationProvider>          
                 </div>
               </div>
             </FormControl>
