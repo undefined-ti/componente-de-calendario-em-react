@@ -1,0 +1,138 @@
+.main {
+  /* display: flex; */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0rem 0rem 22rem 2rem;
+  min-height: 100vh;
+  max-width: 1280px;
+  width: 80rem;
+}
+
+/* .div-calendar{
+  display: flex;
+  overflow: auto;
+  @media (max-width:'1280px') {
+    overflow: none;
+  }
+}
+
+.div-overflow{
+  display: flex;
+  overflow: hidden;
+  @media (max-width:'1280px') {
+    overflow: none;
+  }
+} */
+
+.card {
+  background: var(--surface-card);
+  padding: 2rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+.resizeable {
+  position: absolute;
+  border: 1px solid #533535;
+  width: 60px;
+  height: 25px;
+  border-radius: 3px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width:50px;
+  min-height: 15px;
+  z-index: 1;
+  background-color: aqua;
+}
+
+.resizerR {
+  cursor: col-resize;
+  height: 100%;
+  right: 0;
+  top: 0;
+  width: 5px;
+  position: absolute;
+  background: black;
+}
+
+.resizerL {
+  cursor: col-resize;
+  height: 100%;
+  left: 0;
+  top: 0;
+  width: 5px;
+  position: absolute;
+  background: black;
+}
+
+/* Calendar.module.css */
+.calendar {
+  position: relative;
+}
+
+.daysContainer {
+  display: flex;
+  overflow: auto;
+}
+
+
+
+.day {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  border-right: 1px solid #ccc;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  flex-direction: column;
+  overflow: auto;
+  font-size: 10px;
+  color: #7c7c7c;
+}
+
+.guest {
+  /* position: absolute; */
+  top: 12px;
+  height:25px;
+  background-color: #94bce7;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* border: 1px solid #0056b3; */
+  transform: skewX(-35deg);
+  z-index: 10;
+}
+
+.drag-over {
+  border: 4px dotted green;
+}
+
+/* .guest:hover{
+  background-color: #007bff;
+} */
+
+
+
+.preview {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.2); 
+  pointer-events: none; 
+}
+
+.clipPath{
+  clip-path: polygon(0 0, 0 0, 0 0);
+}
+
+
+
+
+
+
+
