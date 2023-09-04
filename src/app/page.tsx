@@ -137,7 +137,7 @@ export default function Home() {
     datasIntervalo.push(data);
   }
 
-  // console.log(datasIntervalo);
+  console.log(datasIntervalo);
 
   const dayWidth = 60;
 
@@ -183,6 +183,7 @@ export default function Home() {
     isCheckIn: any,
     reservationIndex: any
   ) => {
+    debugger;
     event.preventDefault();
 
     const reservation: any = reservations.find(
@@ -205,6 +206,7 @@ export default function Home() {
     const handleMouseMove = (event: any) => {
       const offsetX = event.clientX - startX;
       const newLeft = offsetX + startLeft;
+      debugger;
       const newDay = Math.max(
         0,
         Math.min(datasIntervalo.length, Math.floor(newLeft / dayWidth))
@@ -246,6 +248,7 @@ export default function Home() {
   };
 
   const handleDayDrop = (event: any, day: any, reservationIndex: any) => {
+    // debugger
     event.preventDefault();
 
     const jsonObject = JSON.parse(draggedHospede);
@@ -288,6 +291,7 @@ export default function Home() {
     // const check = checkDate(newCheckIn, newCheckOut);
 
     // if(check === true){
+    //   debugger
     //   newCheckIn = checkInIndex;
     //   newCheckOut = checkOutIndex;
     // };
@@ -307,6 +311,7 @@ export default function Home() {
   };
 
   const checkDate = (checkIn: any, checkOut: any) => {
+    debugger;
     const CheckIn = checkIn;
     const CheckOut = checkOut;
 
@@ -356,6 +361,7 @@ export default function Home() {
   };
 
   const addReservation = (event: any, date: any) => {
+    debugger;
     const clientY = Math.ceil(event.clientY / 60 - 2);
 
     const lastReservation = reservations[reservations.length - 1];
@@ -507,7 +513,6 @@ export default function Home() {
                 <div
                   style={{ display: "flex", overflow: "hidden" }}
                   ref={(element) => {
-                    console.log("entrei aqui");
                     div2.current[index] = element as any;
                   }}
                   onScroll={onScroll}
